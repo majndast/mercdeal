@@ -63,7 +63,7 @@ export default async function AccountPage() {
                 </div>
               </div>
               <Link
-                href="/ucet/nastaveni"
+                href="/ucet/upravit"
                 className="flex items-center gap-2 text-[#00adef] hover:underline"
               >
                 <Settings className="w-4 h-4" />
