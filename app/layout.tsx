@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { MetaPixel } from "@/components/seo/MetaPixel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +20,12 @@ export const metadata: Metadata = {
   title: "MercDeal - Tvůj dodavatel Mercedes dílů",
   description: "Největší výběr náhradních dílů a příslušenství pro Mercedes-Benz. Kvalitní díly za skvělé ceny.",
   keywords: "Mercedes, díly, náhradní díly, příslušenství, Mercedes-Benz, AMG, tuning",
+  openGraph: {
+    title: "MercDeal - Tvůj dodavatel Mercedes dílů",
+    description: "Největší výběr náhradních dílů a příslušenství pro Mercedes-Benz.",
+    type: "website",
+    locale: "cs_CZ",
+  },
 };
 
 export default function RootLayout({
@@ -30,9 +38,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <AuthProvider>
+          <MetaPixel />
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
