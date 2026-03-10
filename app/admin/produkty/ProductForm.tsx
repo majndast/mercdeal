@@ -12,10 +12,10 @@ const productSchema = z.object({
   name: z.string().min(2, 'Název musí mít alespoň 2 znaky'),
   slug: z.string().min(2, 'Slug musí mít alespoň 2 znaky').regex(/^[a-z0-9-]+$/, 'Slug může obsahovat pouze malá písmena, čísla a pomlčky'),
   description: z.string().optional(),
-  price: z.coerce.number().min(0, 'Cena musí být kladná'),
-  original_price: z.coerce.number().optional().nullable(),
+  price: z.number().min(0, 'Cena musí být kladná'),
+  original_price: z.number().optional().nullable(),
   sku: z.string().optional(),
-  stock: z.coerce.number().min(0, 'Sklad musí být kladný'),
+  stock: z.number().min(0, 'Sklad musí být kladný'),
   category_id: z.string().optional().nullable(),
   badge: z.string().optional().nullable(),
   is_active: z.boolean(),
@@ -109,7 +109,7 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
       // Create or update product
       const productData = {
         ...data,
-        original_price: data.original_price || null,
+        original_price: data.original_price && !isNaN(data.original_price) ? data.original_price : null,
         category_id: data.category_id || null,
         badge: data.badge || null,
       }
@@ -309,7 +309,7 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
                   Cena (Kč) *
                 </label>
                 <input
-                  {...register('price')}
+                  {...register('price', { valueAsNumber: true })}
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
                 />
@@ -321,7 +321,7 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
                   Původní cena (Kč)
                 </label>
                 <input
-                  {...register('original_price')}
+                  {...register('original_price', { valueAsNumber: true })}
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
                 />
@@ -342,7 +342,7 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
                   Skladem (ks)
                 </label>
                 <input
-                  {...register('stock')}
+                  {...register('stock', { valueAsNumber: true })}
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
                 />
