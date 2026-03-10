@@ -18,9 +18,25 @@ const categories = [
 ];
 
 const mercedesModels = [
-  "A-Třída", "B-Třída", "C-Třída", "E-Třída", "S-Třída",
-  "GLA", "GLB", "GLC", "GLE", "GLS", "G-Třída",
-  "CLA", "CLS", "AMG GT", "EQC", "EQS"
+  { name: "A-Třída", slug: "a-trida" },
+  { name: "B-Třída", slug: "b-trida" },
+  { name: "C-Třída W205", slug: "c-trida-w205" },
+  { name: "C-Třída W206", slug: "c-trida-w206" },
+  { name: "E-Třída W213", slug: "e-trida-w213" },
+  { name: "E-Třída W214", slug: "e-trida-w214" },
+  { name: "S-Třída W222", slug: "s-trida-w222" },
+  { name: "S-Třída W223", slug: "s-trida-w223" },
+  { name: "GLA", slug: "gla" },
+  { name: "GLB", slug: "glb" },
+  { name: "GLC", slug: "glc" },
+  { name: "GLE", slug: "gle" },
+  { name: "GLS", slug: "gls" },
+  { name: "G-Třída", slug: "g-trida" },
+  { name: "CLA", slug: "cla" },
+  { name: "CLS", slug: "cls" },
+  { name: "AMG GT", slug: "amg-gt" },
+  { name: "EQC", slug: "eqc" },
+  { name: "EQS", slug: "eqs" },
 ];
 
 export default function Header() {
@@ -191,11 +207,11 @@ export default function Header() {
               <div className="absolute left-0 top-full w-48 bg-white text-gray-800 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 max-h-80 overflow-y-auto">
                 {mercedesModels.map((model) => (
                   <Link
-                    key={model}
-                    href={`/model/${model.toLowerCase().replace(/\s+/g, "-")}`}
+                    key={model.slug}
+                    href={`/model/${model.slug}`}
                     className="block px-4 py-2 hover:bg-gray-100 border-b border-gray-100 transition"
                   >
-                    {model}
+                    {model.name}
                   </Link>
                 ))}
               </div>
