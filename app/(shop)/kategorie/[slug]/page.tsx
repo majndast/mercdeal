@@ -4,34 +4,34 @@ import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { ShoppingCart, SlidersHorizontal, X } from 'lucide-react'
+import { ShoppingCart, SlidersHorizontal, X, Phone, Mail, MapPin } from 'lucide-react'
 
-// Subcategories for each main category (will be loaded from DB in future)
-const subcategoriesMap: Record<string, { name: string; slug: string }[]> = {
+// Subcategories with images for each main category
+const subcategoriesMap: Record<string, { name: string; slug: string; image: string }[]> = {
   exterior: [
-    { name: 'Osvětlení', slug: 'osvetleni' },
-    { name: 'Kliky', slug: 'kliky' },
-    { name: 'Masky', slug: 'masky' },
-    { name: 'Zrcátka', slug: 'zrcatka' },
-    { name: 'Karosářské díly', slug: 'karosarske-dily' },
+    { name: 'Osvětlení', slug: 'osvetleni', image: '/images/categories/osvetleni.jpg' },
+    { name: 'Kliky', slug: 'kliky', image: '/images/categories/kliky.jpg' },
+    { name: 'Masky', slug: 'masky', image: '/images/categories/masky.jpg' },
+    { name: 'Zrcátka', slug: 'zrcatka', image: '/images/categories/zrcatka.jpg' },
+    { name: 'Karosářské díly', slug: 'karosarske-dily', image: '/images/categories/karosarske-dily.jpg' },
   ],
   interior: [
-    { name: 'Volanty', slug: 'volanty' },
-    { name: 'Sedadla', slug: 'sedadla' },
-    { name: 'Obložení', slug: 'oblozeni' },
-    { name: 'Pedály', slug: 'pedaly' },
+    { name: 'Volanty', slug: 'volanty', image: '/images/categories/volanty.jpg' },
+    { name: 'Sedadla', slug: 'sedadla', image: '/images/categories/sedadla.jpg' },
+    { name: 'Obložení', slug: 'oblozeni', image: '/images/categories/oblozeni.jpg' },
+    { name: 'Pedály', slug: 'pedaly', image: '/images/categories/pedaly.jpg' },
   ],
   elektroinstalace: [
-    { name: 'Kabeláž', slug: 'kabelaz' },
-    { name: 'Senzory', slug: 'senzory' },
-    { name: 'Řídící jednotky', slug: 'ridici-jednotky' },
-    { name: 'Displeje', slug: 'displeje' },
+    { name: 'Kabeláž', slug: 'kabelaz', image: '/images/categories/kabelaz.jpg' },
+    { name: 'Senzory', slug: 'senzory', image: '/images/categories/senzory.jpg' },
+    { name: 'Řídící jednotky', slug: 'ridici-jednotky', image: '/images/categories/ridici-jednotky.jpg' },
+    { name: 'Displeje', slug: 'displeje', image: '/images/categories/displeje.jpg' },
   ],
   podvozek: [
-    { name: 'Brzdy', slug: 'brzdy' },
-    { name: 'Pružiny', slug: 'pruziny' },
-    { name: 'Tlumiče', slug: 'tlumice' },
-    { name: 'Ramena', slug: 'ramena' },
+    { name: 'Brzdy', slug: 'brzdy', image: '/images/categories/brzdy.jpg' },
+    { name: 'Pružiny', slug: 'pruziny', image: '/images/categories/pruziny.jpg' },
+    { name: 'Tlumiče', slug: 'tlumice', image: '/images/categories/tlumice.jpg' },
+    { name: 'Ramena', slug: 'ramena', image: '/images/categories/ramena.jpg' },
   ],
 }
 
@@ -40,7 +40,30 @@ const categoryNames: Record<string, string> = {
   interior: 'Interiér',
   elektroinstalace: 'Elektroinstalace',
   podvozek: 'Podvozek',
+  osvetleni: 'Osvětlení',
+  kliky: 'Kliky',
+  masky: 'Masky',
+  zrcatka: 'Zrcátka',
+  'karosarske-dily': 'Karosářské díly',
+  volanty: 'Volanty',
+  sedadla: 'Sedadla',
+  oblozeni: 'Obložení',
+  pedaly: 'Pedály',
+  kabelaz: 'Kabeláž',
+  senzory: 'Senzory',
+  'ridici-jednotky': 'Řídící jednotky',
+  displeje: 'Displeje',
+  brzdy: 'Brzdy',
+  pruziny: 'Pružiny',
+  tlumice: 'Tlumiče',
+  ramena: 'Ramena',
 }
+
+// Main categories that show subcategory tiles
+const mainCategories = ['exterior', 'interior', 'elektroinstalace', 'podvozek']
+
+// Special page - contact only
+const contactOnlyPages = ['karosarske-dily']
 
 interface Category {
   id: string
@@ -178,49 +201,106 @@ export default function CategoryPage() {
     return true
   })
 
+  const isMainCategory = mainCategories.includes(slug)
+  const isContactOnly = contactOnlyPages.includes(slug)
+
+  // Contact only page (karosarske-dily)
+  if (isContactOnly) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-6">
+            <h1 className="text-3xl font-bold text-gray-900">{categoryName}</h1>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Kontaktujte nás</h2>
+            <p className="text-gray-600 mb-8">
+              Pro karosářské díly nás prosím kontaktujte přímo. Rádi vám připravíme individuální nabídku.
+            </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div className="w-12 h-12 bg-[#00adef] rounded-full flex items-center justify-center">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Telefon</p>
+                  <p className="font-semibold text-gray-900">+420 123 456 789</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div className="w-12 h-12 bg-[#00adef] rounded-full flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">E-mail</p>
+                  <p className="font-semibold text-gray-900">info@mercdeal.cz</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div className="w-12 h-12 bg-[#00adef] rounded-full flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Adresa</p>
+                  <p className="font-semibold text-gray-900">Praha, Česká republika</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-6">
           <h1 className="text-3xl font-bold text-gray-900">{categoryName}</h1>
-          <p className="text-gray-600 mt-1">{filteredProducts.length} produktů</p>
+          {!isMainCategory && (
+            <p className="text-gray-600 mt-1">{filteredProducts.length} produktů</p>
+          )}
         </div>
       </div>
 
-      {/* Subcategories */}
-      {subcategories.length > 0 && (
-        <div className="bg-white border-b">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setActiveSubcategory('')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                  activeSubcategory === ''
-                    ? 'bg-[#00adef] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+      {/* Subcategory Tiles - only for main categories */}
+      {isMainCategory && subcategories.length > 0 && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {subcategories.map((sub) => (
+              <Link
+                key={sub.slug}
+                href={`/kategorie/${sub.slug}`}
+                className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-200 shadow-sm hover:shadow-xl transition-all duration-300"
               >
-                Vše
-              </button>
-              {subcategories.map((sub) => (
-                <button
-                  key={sub.slug}
-                  onClick={() => setActiveSubcategory(sub.slug)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                    activeSubcategory === sub.slug
-                      ? 'bg-[#00adef] text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {sub.name}
-                </button>
-              ))}
-            </div>
+                {/* Placeholder gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-900" />
+                {/* Image (if exists) */}
+                <img
+                  src={sub.image}
+                  alt={sub.name}
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                {/* Title */}
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <h3 className="text-white font-bold text-lg group-hover:text-[#00adef] transition">
+                    {sub.name}
+                  </h3>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       )}
 
+      {/* Products section - only for subcategory pages */}
+      {!isMainCategory && (
       <div className="container mx-auto px-4 py-6">
         {/* Filters and Sort Bar */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -410,6 +490,7 @@ export default function CategoryPage() {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }
