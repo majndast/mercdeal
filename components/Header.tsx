@@ -7,36 +7,12 @@ import { useCart } from "@/lib/hooks/useCart";
 import { SearchInput } from "@/components/products/SearchInput";
 import { User, Heart, ShoppingCart, Menu, X, LogOut, Settings } from "lucide-react";
 
-const categories = [
-  { name: "Exteriér", href: "/kategorie/exterior", icon: "🚗" },
-  { name: "Interiér", href: "/kategorie/interior", icon: "🪑" },
-  { name: "Osvětlení", href: "/kategorie/osvetleni", icon: "💡" },
-  { name: "Motor & Výfuk", href: "/kategorie/motor", icon: "⚙️" },
-  { name: "Podvozek & Brzdy", href: "/kategorie/podvozek", icon: "🔧" },
-  { name: "Dárky & Merch", href: "/kategorie/darky", icon: "🎁" },
-  { name: "Bazar", href: "/bazar", icon: "♻️" },
-];
-
-const mercedesModels = [
-  { name: "A-Třída", slug: "a-trida" },
-  { name: "B-Třída", slug: "b-trida" },
-  { name: "C-Třída W205", slug: "c-trida-w205" },
-  { name: "C-Třída W206", slug: "c-trida-w206" },
-  { name: "E-Třída W213", slug: "e-trida-w213" },
-  { name: "E-Třída W214", slug: "e-trida-w214" },
-  { name: "S-Třída W222", slug: "s-trida-w222" },
-  { name: "S-Třída W223", slug: "s-trida-w223" },
-  { name: "GLA", slug: "gla" },
-  { name: "GLB", slug: "glb" },
-  { name: "GLC", slug: "glc" },
-  { name: "GLE", slug: "gle" },
-  { name: "GLS", slug: "gls" },
-  { name: "G-Třída", slug: "g-trida" },
-  { name: "CLA", slug: "cla" },
-  { name: "CLS", slug: "cls" },
-  { name: "AMG GT", slug: "amg-gt" },
-  { name: "EQC", slug: "eqc" },
-  { name: "EQS", slug: "eqs" },
+const mainCategories = [
+  { name: "Exteriér", href: "/kategorie/exterior" },
+  { name: "Interiér", href: "/kategorie/interior" },
+  { name: "Osvětlení", href: "/kategorie/osvetleni" },
+  { name: "Elektroinstalace", href: "/kategorie/elektroinstalace" },
+  { name: "Podvozek", href: "/kategorie/podvozek" },
 ];
 
 export default function Header() {
@@ -178,54 +154,17 @@ export default function Header() {
       <nav className="bg-[#0d0d0d] text-white">
         <div className="container mx-auto px-4">
           <div className="hidden md:flex items-center">
-            {/* Categories dropdown */}
-            <div className="relative group">
-              <button className="flex items-center gap-2 bg-[#00adef] px-6 py-4 font-semibold hover:bg-[#0095cc] transition">
-                <Menu className="w-5 h-5" />
-                <span>Kategorie</span>
-              </button>
-              <div className="absolute left-0 top-full w-64 bg-white text-gray-800 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.name}
-                    href={cat.href}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 border-b border-gray-100 transition"
-                  >
-                    <span>{cat.icon}</span>
-                    <span>{cat.name}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Models dropdown */}
-            <div className="relative group">
-              <button className="flex items-center gap-2 px-6 py-4 hover:bg-white/10 transition">
-                <span>Dle modelu</span>
-                <span className="text-xs">▼</span>
-              </button>
-              <div className="absolute left-0 top-full w-48 bg-white text-gray-800 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 max-h-80 overflow-y-auto">
-                {mercedesModels.map((model) => (
-                  <Link
-                    key={model.slug}
-                    href={`/model/${model.slug}`}
-                    className="block px-4 py-2 hover:bg-gray-100 border-b border-gray-100 transition"
-                  >
-                    {model.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <Link href="/produkty" className="px-6 py-4 hover:bg-white/10 transition">
-              Všechny produkty
-            </Link>
-            <Link href="/akce" className="px-6 py-4 hover:bg-white/10 transition flex items-center gap-2">
-              <span className="bg-red-500 text-xs px-2 py-0.5 rounded">SLEVA</span>
-              Akční nabídky
-            </Link>
-            <Link href="/amg" className="px-6 py-4 hover:bg-white/10 transition font-bold">
-              AMG
+            {mainCategories.map((cat) => (
+              <Link
+                key={cat.name}
+                href={cat.href}
+                className="px-6 py-4 hover:bg-white/10 transition font-medium"
+              >
+                {cat.name}
+              </Link>
+            ))}
+            <Link href="/kontakt" className="px-6 py-4 hover:bg-white/10 transition">
+              Kontakt
             </Link>
           </div>
         </div>
@@ -276,17 +215,23 @@ export default function Header() {
               </div>
             )}
 
-            {categories.map((cat) => (
+            {mainCategories.map((cat) => (
               <Link
                 key={cat.name}
                 href={cat.href}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 border-b"
+                className="block px-4 py-3 hover:bg-gray-100 border-b font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <span>{cat.icon}</span>
-                <span>{cat.name}</span>
+                {cat.name}
               </Link>
             ))}
+            <Link
+              href="/kontakt"
+              className="block px-4 py-3 hover:bg-gray-100 border-b"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Kontakt
+            </Link>
 
             {profile?.role === 'admin' && (
               <Link
