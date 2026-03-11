@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Upload, X, Plus } from 'lucide-react'
+import { Loader2, Upload, X } from 'lucide-react'
 
 const productSchema = z.object({
   name: z.string().min(2, 'Název musí mít alespoň 2 znaky'),
@@ -15,8 +15,13 @@ const productSchema = z.object({
   price: z.number().min(0, 'Cena musí být kladná'),
   original_price: z.number().optional().nullable(),
   sku: z.string().optional(),
+  part_number: z.string().optional(),
+  condition: z.string().optional().nullable(),
+  color: z.string().optional(),
   stock: z.number().min(0, 'Sklad musí být kladný'),
   category_id: z.string().optional().nullable(),
+  class_id: z.string().optional().nullable(),
+  generation_id: z.string().optional().nullable(),
   badge: z.string().optional().nullable(),
   is_active: z.boolean(),
   is_featured: z.boolean(),
@@ -24,23 +29,54 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>
 
+interface MercedesClass {
+  id: string
+  name: string
+  slug: string
+}
+
+interface Generation {
+  id: string
+  class_id: string
+  name: string
+  slug: string
+  year_from: number | null
+  year_to: number | null
+}
+
 interface ProductFormProps {
   categories: { id: string; name: string }[]
-  models: { id: string; name: string }[]
   product?: any
 }
 
-export function ProductForm({ categories, models, product }: ProductFormProps) {
+export function ProductForm({ categories, product }: ProductFormProps) {
   const [images, setImages] = useState<File[]>([])
   const [existingImages, setExistingImages] = useState<{ id: string; url: string }[]>(
     product?.product_images || []
   )
-  const [selectedModels, setSelectedModels] = useState<string[]>(
-    product?.product_models?.map((pm: any) => pm.model_id) || []
-  )
   const [uploading, setUploading] = useState(false)
+  const [classes, setClasses] = useState<MercedesClass[]>([])
+  const [generations, setGenerations] = useState<Generation[]>([])
+  const [selectedClassId, setSelectedClassId] = useState<string>(product?.class_id || '')
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    fetchClassesAndGenerations()
+  }, [])
+
+  const fetchClassesAndGenerations = async () => {
+    const [classesRes, gensRes] = await Promise.all([
+      supabase.from('mercedes_classes').select('*').order('sort_order'),
+      supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
+    ])
+    setClasses(classesRes.data || [])
+    setGenerations(gensRes.data || [])
+  }
+
+  const filteredGenerations = selectedClassId
+    ? generations.filter(g => g.class_id === selectedClassId)
+    : []
 
   const {
     register,
@@ -57,13 +93,20 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
       price: product?.price || 0,
       original_price: product?.original_price || null,
       sku: product?.sku || '',
+      part_number: product?.part_number || '',
+      condition: product?.condition || null,
+      color: product?.color || '',
       stock: product?.stock || 0,
       category_id: product?.category_id || null,
+      class_id: product?.class_id || null,
+      generation_id: product?.generation_id || null,
       badge: product?.badge || null,
       is_active: product?.is_active ?? true,
       is_featured: product?.is_featured ?? false,
     },
   })
+
+  const watchClassId = watch('class_id')
 
   const generateSlug = (name: string) => {
     return name
@@ -94,12 +137,10 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
     setExistingImages(existingImages.filter((img) => img.id !== imageId))
   }
 
-  const toggleModel = (modelId: string) => {
-    setSelectedModels((prev) =>
-      prev.includes(modelId)
-        ? prev.filter((id) => id !== modelId)
-        : [...prev, modelId]
-    )
+  const handleClassChange = (classId: string) => {
+    setSelectedClassId(classId)
+    setValue('class_id', classId || null)
+    setValue('generation_id', null)
   }
 
   const onSubmit = async (data: ProductFormData) => {
@@ -111,6 +152,9 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
         ...data,
         original_price: data.original_price && !isNaN(data.original_price) ? data.original_price : null,
         category_id: data.category_id || null,
+        class_id: data.class_id || null,
+        generation_id: data.generation_id || null,
+        condition: data.condition || null,
         badge: data.badge || null,
       }
 
@@ -162,17 +206,6 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
 
       if (removedImageIds.length > 0) {
         await supabase.from('product_images').delete().in('id', removedImageIds)
-      }
-
-      // Update product models
-      await supabase.from('product_models').delete().eq('product_id', productId)
-      if (selectedModels.length > 0) {
-        await supabase.from('product_models').insert(
-          selectedModels.map((modelId) => ({
-            product_id: productId,
-            model_id: modelId,
-          }))
-        )
       }
 
       router.push('/admin/produkty')
@@ -276,24 +309,86 @@ export function ProductForm({ categories, models, product }: ProductFormProps) {
             </div>
           </div>
 
-          {/* Models */}
+          {/* Class & Generation */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-6">Kompatibilní modely</h2>
-            <div className="flex flex-wrap gap-2">
-              {models.map((model) => (
-                <button
-                  key={model.id}
-                  type="button"
-                  onClick={() => toggleModel(model.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm transition ${
-                    selectedModels.includes(model.id)
-                      ? 'bg-[#00adef] text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+            <h2 className="text-lg font-bold text-gray-900 mb-6">Třída a generace</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Třída Mercedes
+                </label>
+                <select
+                  value={selectedClassId}
+                  onChange={(e) => handleClassChange(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
                 >
-                  {model.name}
-                </button>
-              ))}
+                  <option value="">Vyberte třídu</option>
+                  {classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Generace
+                </label>
+                <select
+                  {...register('generation_id')}
+                  disabled={!selectedClassId}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none disabled:bg-gray-100"
+                >
+                  <option value="">Vyberte generaci</option>
+                  {filteredGenerations.map((gen) => (
+                    <option key={gen.id} value={gen.id}>
+                      {gen.name} ({gen.year_from}{gen.year_to ? `-${gen.year_to}` : '-'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Part details */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-6">Detaily dílu</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Číslo dílu
+                </label>
+                <input
+                  {...register('part_number')}
+                  placeholder="např. A2059001234"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Stav
+                </label>
+                <select
+                  {...register('condition')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
+                >
+                  <option value="">Vyberte stav</option>
+                  <option value="A+">A+ (jako nový)</option>
+                  <option value="A">A (výborný)</option>
+                  <option value="B">B (dobrý)</option>
+                  <option value="C">C (použitelný)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Barva
+                </label>
+                <input
+                  {...register('color')}
+                  placeholder="např. Obsidian Black"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
+                />
+              </div>
             </div>
           </div>
         </div>
