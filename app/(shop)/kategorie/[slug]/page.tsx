@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { ShoppingCart, SlidersHorizontal, ChevronDown, X } from 'lucide-react'
+import { ShoppingCart, SlidersHorizontal, X } from 'lucide-react'
 
-// Subcategories for each main category
+// Subcategories for each main category (will be loaded from DB in future)
 const subcategoriesMap: Record<string, { name: string; slug: string }[]> = {
   exterior: [
     { name: 'Světla', slug: 'svetla' },
@@ -49,6 +49,12 @@ const categoryNames: Record<string, string> = {
   podvozek: 'Podvozek',
 }
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+}
+
 // Mercedes classes and generations
 const mercedesClasses = [
   { name: 'A-Třída', slug: 'a-trida' },
@@ -84,6 +90,7 @@ export default function CategoryPage() {
   const router = useRouter()
   const slug = params.slug as string
 
+  const [category, setCategory] = useState<Category | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
@@ -98,19 +105,34 @@ export default function CategoryPage() {
 
   const supabase = createClient()
   const subcategories = subcategoriesMap[slug] || []
-  const categoryName = categoryNames[slug] || slug
+  const categoryName = category?.name || categoryNames[slug] || slug
 
   useEffect(() => {
-    fetchProducts()
+    fetchCategoryAndProducts()
   }, [slug, sortBy, activeSubcategory])
 
-  const fetchProducts = async () => {
+  const fetchCategoryAndProducts = async () => {
     setLoading(true)
 
+    // First, get the category by slug
+    const { data: categoryData } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+
+    setCategory(categoryData)
+
+    // Then fetch products for this category
     let query = supabase
       .from('products')
       .select('*, product_images(*)')
       .eq('is_active', true)
+
+    // Filter by category if found
+    if (categoryData?.id) {
+      query = query.eq('category_id', categoryData.id)
+    }
 
     // Sort
     switch (sortBy) {
@@ -143,7 +165,7 @@ export default function CategoryPage() {
 
     router.push(`/kategorie/${slug}?${params.toString()}`)
     setShowFilters(false)
-    fetchProducts()
+    fetchCategoryAndProducts()
   }
 
   const clearFilters = () => {
