@@ -16,7 +16,7 @@ const navigation = [
   { name: 'Produkty', href: '/admin/produkty', icon: Package },
   { name: 'Objednávky', href: '/admin/objednavky', icon: ShoppingCart },
   { name: 'Kategorie', href: '/admin/kategorie', icon: FolderTree },
-  { name: 'Modely', href: '/admin/modely', icon: Car },
+  { name: 'Třídy & Generace', href: '/admin/tridy', icon: Car },
   { name: 'Recenze', href: '/admin/recenze', icon: Star },
   { name: 'Uživatelé', href: '/admin/uzivatele', icon: Users },
   { name: 'Nastavení', href: '/admin/nastaveni', icon: Settings },
