@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -86,19 +87,19 @@ export default function Footer() {
             <h4 className="text-lg font-bold mb-4">Kontakt</h4>
             <ul className="space-y-3 text-gray-400">
               <li className="flex items-start gap-3">
-                <span>📍</span>
+                <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
                 <span>MercDeal s.r.o.<br />Průmyslová 123<br />150 00 Praha 5</span>
               </li>
               <li className="flex items-center gap-3">
-                <span>📞</span>
+                <Phone className="w-4 h-4 flex-shrink-0" />
                 <a href="tel:+420123456789" className="hover:text-[#00adef] transition">+420 123 456 789</a>
               </li>
               <li className="flex items-center gap-3">
-                <span>✉️</span>
+                <Mail className="w-4 h-4 flex-shrink-0" />
                 <a href="mailto:info@mercdeal.cz" className="hover:text-[#00adef] transition">info@mercdeal.cz</a>
               </li>
               <li className="flex items-center gap-3">
-                <span>🕐</span>
+                <Clock className="w-4 h-4 flex-shrink-0" />
                 <span>Po-Pá: 8:00 - 17:00</span>
               </li>
             </ul>

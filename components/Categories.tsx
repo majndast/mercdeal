@@ -1,53 +1,30 @@
 import Link from "next/link";
+import { Car, Armchair, Zap, Gauge } from "lucide-react";
 
 const categories = [
   {
     name: "Exteriér",
-    description: "Nárazníky, masky, zrcátka, spoilery",
-    icon: "🚗",
+    description: "Osvětlení, kliky, masky, zrcátka",
+    icon: Car,
     href: "/kategorie/exterior",
-    color: "from-blue-500 to-blue-600",
-    count: 2340,
   },
   {
     name: "Interiér",
-    description: "Volanty, pedály, LED osvětlení",
-    icon: "🪑",
+    description: "Volanty, sedadla, obložení, pedály",
+    icon: Armchair,
     href: "/kategorie/interior",
-    color: "from-purple-500 to-purple-600",
-    count: 1560,
   },
   {
-    name: "Osvětlení",
-    description: "Přední světla, DRL, LED moduly",
-    icon: "💡",
-    href: "/kategorie/osvetleni",
-    color: "from-yellow-500 to-orange-500",
-    count: 890,
+    name: "Elektroinstalace",
+    description: "Kabeláž, senzory, displeje",
+    icon: Zap,
+    href: "/kategorie/elektroinstalace",
   },
   {
-    name: "Motor & Výfuk",
-    description: "Sání, výfuky, chiptuning",
-    icon: "⚙️",
-    href: "/kategorie/motor",
-    color: "from-red-500 to-red-600",
-    count: 1230,
-  },
-  {
-    name: "Podvozek & Brzdy",
-    description: "Pružiny, tlumiče, brzdové kotouče",
-    icon: "🔧",
+    name: "Podvozek",
+    description: "Brzdy, pružiny, tlumiče, ramena",
+    icon: Gauge,
     href: "/kategorie/podvozek",
-    color: "from-gray-600 to-gray-700",
-    count: 980,
-  },
-  {
-    name: "Dárky & Merch",
-    description: "Klíčenky, modely, oblečení",
-    icon: "🎁",
-    href: "/kategorie/darky",
-    color: "from-green-500 to-green-600",
-    count: 450,
   },
 ];
 
@@ -62,19 +39,18 @@ export default function Categories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((cat) => (
             <Link
               key={cat.name}
               href={cat.href}
-              className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
             >
-              <div className={`w-16 h-16 bg-gradient-to-br ${cat.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                <span className="text-3xl">{cat.icon}</span>
+              <div className="w-14 h-14 bg-[#0d0d0d] rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#00adef] transition-colors">
+                <cat.icon className="w-7 h-7 text-white" />
               </div>
-              <h3 className="font-bold text-lg mb-1">{cat.name}</h3>
-              <p className="text-gray-500 text-sm mb-2">{cat.description}</p>
-              <p className="text-[#00adef] text-sm font-semibold">{cat.count} produktů</p>
+              <h3 className="font-bold text-lg mb-1 group-hover:text-[#00adef] transition-colors">{cat.name}</h3>
+              <p className="text-gray-500 text-sm">{cat.description}</p>
             </Link>
           ))}
         </div>

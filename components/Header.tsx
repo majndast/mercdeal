@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/lib/hooks/useCart";
 import { SearchInput } from "@/components/products/SearchInput";
-import { User, Heart, ShoppingCart, Menu, X, LogOut, Settings } from "lucide-react";
+import { User, Heart, ShoppingCart, Menu, X, LogOut, Settings, Phone, Mail } from "lucide-react";
 
 const mainCategories = [
   { name: "Exteriér", href: "/kategorie/exterior" },
@@ -32,9 +32,9 @@ export default function Header() {
       {/* Top bar */}
       <div className="bg-[#0d0d0d] text-white text-sm py-2">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex gap-4">
-            <span>📞 +420 123 456 789</span>
-            <span className="hidden sm:inline">✉️ info@mercdeal.cz</span>
+          <div className="flex gap-4 items-center">
+            <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> +420 123 456 789</span>
+            <span className="hidden sm:flex items-center gap-1"><Mail className="w-3 h-3" /> info@mercdeal.cz</span>
           </div>
           <div className="hidden md:flex gap-4">
             <Link href="/o-nas" className="hover:text-[#00adef] transition">O nás</Link>
