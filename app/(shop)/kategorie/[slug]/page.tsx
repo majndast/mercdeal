@@ -9,7 +9,7 @@ import { ShoppingCart, SlidersHorizontal, X } from 'lucide-react'
 // Subcategories for each main category (will be loaded from DB in future)
 const subcategoriesMap: Record<string, { name: string; slug: string }[]> = {
   exterior: [
-    { name: 'Světla', slug: 'svetla' },
+    { name: 'Osvětlení', slug: 'osvetleni' },
     { name: 'Kliky', slug: 'kliky' },
     { name: 'Masky', slug: 'masky' },
     { name: 'Zrcátka', slug: 'zrcatka' },
@@ -20,12 +20,6 @@ const subcategoriesMap: Record<string, { name: string; slug: string }[]> = {
     { name: 'Sedadla', slug: 'sedadla' },
     { name: 'Obložení', slug: 'oblozeni' },
     { name: 'Pedály', slug: 'pedaly' },
-  ],
-  osvetleni: [
-    { name: 'Přední světla', slug: 'predni-svetla' },
-    { name: 'Zadní světla', slug: 'zadni-svetla' },
-    { name: 'LED moduly', slug: 'led-moduly' },
-    { name: 'Ambientní osvětlení', slug: 'ambientni-osvetleni' },
   ],
   elektroinstalace: [
     { name: 'Kabeláž', slug: 'kabelaz' },
@@ -44,7 +38,6 @@ const subcategoriesMap: Record<string, { name: string; slug: string }[]> = {
 const categoryNames: Record<string, string> = {
   exterior: 'Exteriér',
   interior: 'Interiér',
-  osvetleni: 'Osvětlení',
   elektroinstalace: 'Elektroinstalace',
   podvozek: 'Podvozek',
 }

@@ -10,7 +10,6 @@ import { User, Heart, ShoppingCart, Menu, X, LogOut, Settings } from "lucide-rea
 const mainCategories = [
   { name: "Exteriér", href: "/kategorie/exterior" },
   { name: "Interiér", href: "/kategorie/interior" },
-  { name: "Osvětlení", href: "/kategorie/osvetleni" },
   { name: "Elektroinstalace", href: "/kategorie/elektroinstalace" },
   { name: "Podvozek", href: "/kategorie/podvozek" },
 ];
