@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/lib/hooks/useCart";
 import { SearchInput } from "@/components/products/SearchInput";
+import ModelSearch from "@/components/ModelSearch";
 import { User, Heart, ShoppingCart, Menu, X, LogOut, Settings, Phone, Mail } from "lucide-react";
 
 const mainCategories = [
@@ -152,19 +153,24 @@ export default function Header() {
       {/* Navigation */}
       <nav className="bg-[#0d0d0d] text-white">
         <div className="container mx-auto px-4">
-          <div className="hidden md:flex items-center">
-            {mainCategories.map((cat) => (
-              <Link
-                key={cat.name}
-                href={cat.href}
-                className="px-6 py-4 hover:bg-white/10 transition font-medium"
-              >
-                {cat.name}
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center">
+              {mainCategories.map((cat) => (
+                <Link
+                  key={cat.name}
+                  href={cat.href}
+                  className="px-6 py-4 hover:bg-white/10 transition font-medium"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+              <Link href="/kontakt" className="px-6 py-4 hover:bg-white/10 transition">
+                Kontakt
               </Link>
-            ))}
-            <Link href="/kontakt" className="px-6 py-4 hover:bg-white/10 transition">
-              Kontakt
-            </Link>
+            </div>
+            <div className="py-2">
+              <ModelSearch variant="header" />
+            </div>
           </div>
         </div>
       </nav>
@@ -175,6 +181,12 @@ export default function Header() {
           <div className="p-4">
             <div className="mb-4">
               <SearchInput />
+            </div>
+
+            {/* Mobile model search */}
+            <div className="mb-4 pb-4 border-b border-gray-100">
+              <p className="text-sm font-medium text-gray-700 mb-2">Hledat podle modelu</p>
+              <ModelSearch variant="header" />
             </div>
 
             {/* Mobile auth */}
