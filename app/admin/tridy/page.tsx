@@ -85,16 +85,24 @@ export default function ClassesPage() {
       sort_order: isNewClass ? classes.length + 1 : editingClass?.sort_order
     }
 
-    if (isNewClass) {
-      await supabase.from('mercedes_classes').insert(data)
-    } else if (editingClass) {
-      await supabase.from('mercedes_classes').update(data).eq('id', editingClass.id)
-    }
+    try {
+      if (isNewClass) {
+        const { error } = await supabase.from('mercedes_classes').insert(data)
+        if (error) throw error
+      } else if (editingClass) {
+        const { error } = await supabase.from('mercedes_classes').update(data).eq('id', editingClass.id)
+        if (error) throw error
+      }
 
-    setEditingClass(null)
-    setIsNewClass(false)
-    setSavingClass(false)
-    fetchData()
+      setEditingClass(null)
+      setIsNewClass(false)
+      fetchData()
+    } catch (error: any) {
+      console.error('Error saving class:', error)
+      alert('Chyba při ukládání: ' + (error.message || 'Neznámá chyba'))
+    } finally {
+      setSavingClass(false)
+    }
   }
 
   const handleDeleteClass = async (id: string) => {
@@ -133,17 +141,25 @@ export default function ClassesPage() {
       year_to: genForm.year_to ? parseInt(genForm.year_to) : null
     }
 
-    if (isNewGen) {
-      await supabase.from('mercedes_generations').insert(data)
-    } else if (editingGen) {
-      await supabase.from('mercedes_generations').update(data).eq('id', editingGen.id)
-    }
+    try {
+      if (isNewGen) {
+        const { error } = await supabase.from('mercedes_generations').insert(data)
+        if (error) throw error
+      } else if (editingGen) {
+        const { error } = await supabase.from('mercedes_generations').update(data).eq('id', editingGen.id)
+        if (error) throw error
+      }
 
-    setEditingGen(null)
-    setIsNewGen(false)
-    setGenClassId(null)
-    setSavingGen(false)
-    fetchData()
+      setEditingGen(null)
+      setIsNewGen(false)
+      setGenClassId(null)
+      fetchData()
+    } catch (error: any) {
+      console.error('Error saving generation:', error)
+      alert('Chyba při ukládání: ' + (error.message || 'Neznámá chyba'))
+    } finally {
+      setSavingGen(false)
+    }
   }
 
   const handleDeleteGen = async (id: string) => {
