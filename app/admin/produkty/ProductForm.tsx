@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Upload, X } from 'lucide-react'
+import { Loader2, Upload, X, Plus } from 'lucide-react'
 
 const productSchema = z.object({
   name: z.string().min(2, 'Název musí mít alespoň 2 znaky'),
@@ -17,7 +17,7 @@ const productSchema = z.object({
   sku: z.string().optional(),
   part_number: z.string().optional(),
   condition: z.string().optional().nullable(),
-  color: z.string().optional(),
+  colors: z.array(z.string()).optional(),
   stock: z.number().min(0, 'Sklad musí být kladný'),
   category_id: z.string().optional().nullable(),
   class_id: z.string().optional().nullable(),
@@ -58,6 +58,8 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const [classes, setClasses] = useState<MercedesClass[]>([])
   const [generations, setGenerations] = useState<Generation[]>([])
   const [selectedClassId, setSelectedClassId] = useState<string>(product?.class_id || '')
+  const [colors, setColors] = useState<string[]>(product?.colors || [])
+  const [newColor, setNewColor] = useState('')
   const router = useRouter()
   const supabase = createClient()
 
@@ -95,7 +97,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
       sku: product?.sku || '',
       part_number: product?.part_number || '',
       condition: product?.condition || null,
-      color: product?.color || '',
+      colors: product?.colors || [],
       stock: product?.stock || 0,
       category_id: product?.category_id || null,
       class_id: product?.class_id || null,
@@ -141,6 +143,21 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     setSelectedClassId(classId)
     setValue('class_id', classId || null)
     setValue('generation_id', null)
+  }
+
+  const addColor = () => {
+    if (newColor.trim() && !colors.includes(newColor.trim())) {
+      const updatedColors = [...colors, newColor.trim()]
+      setColors(updatedColors)
+      setValue('colors', updatedColors)
+      setNewColor('')
+    }
+  }
+
+  const removeColor = (colorToRemove: string) => {
+    const updatedColors = colors.filter(c => c !== colorToRemove)
+    setColors(updatedColors)
+    setValue('colors', updatedColors)
   }
 
   const onSubmit = async (data: ProductFormData) => {
@@ -379,15 +396,47 @@ export function ProductForm({ categories, product }: ProductFormProps) {
                   <option value="C">C (použitelný)</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Barva
-                </label>
+            </div>
+
+            {/* Colors */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Barvy
+              </label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {colors.map((color) => (
+                  <span
+                    key={color}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm"
+                  >
+                    {color}
+                    <button
+                      type="button"
+                      onClick={() => removeColor(color)}
+                      className="text-gray-400 hover:text-red-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
                 <input
-                  {...register('color')}
+                  type="text"
+                  value={newColor}
+                  onChange={(e) => setNewColor(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
                   placeholder="např. Obsidian Black"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00adef] focus:border-transparent outline-none"
                 />
+                <button
+                  type="button"
+                  onClick={addColor}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-1"
+                >
+                  <Plus className="w-4 h-4" />
+                  Přidat
+                </button>
               </div>
             </div>
           </div>
