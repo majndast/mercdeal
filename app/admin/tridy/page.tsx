@@ -46,13 +46,26 @@ export default function ClassesPage() {
   }, [])
 
   const fetchData = async () => {
-    const [classesRes, gensRes] = await Promise.all([
-      supabase.from('mercedes_classes').select('*').order('sort_order'),
-      supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
-    ])
-    setClasses(classesRes.data || [])
-    setGenerations(gensRes.data || [])
-    setLoading(false)
+    try {
+      const [classesRes, gensRes] = await Promise.all([
+        supabase.from('mercedes_classes').select('*').order('sort_order'),
+        supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
+      ])
+
+      if (classesRes.error) {
+        console.error('Error fetching classes:', classesRes.error)
+      }
+      if (gensRes.error) {
+        console.error('Error fetching generations:', gensRes.error)
+      }
+
+      setClasses(classesRes.data || [])
+      setGenerations(gensRes.data || [])
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const generateSlug = (name: string) => {
