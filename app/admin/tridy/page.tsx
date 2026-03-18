@@ -42,32 +42,21 @@ export default function ClassesPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'NOT SET')
     fetchData()
   }, [])
 
   const fetchData = async () => {
-    console.log('Fetching classes and generations...')
     try {
-      const classesRes = await supabase.from('mercedes_classes').select('*').order('sort_order')
-      console.log('Classes response:', classesRes)
-
-      const gensRes = await supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
-      console.log('Generations response:', gensRes)
-
-      if (classesRes.error) {
-        console.error('Error fetching classes:', classesRes.error)
-      }
-      if (gensRes.error) {
-        console.error('Error fetching generations:', gensRes.error)
-      }
+      const [classesRes, gensRes] = await Promise.all([
+        supabase.from('mercedes_classes').select('*').order('sort_order'),
+        supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
+      ])
 
       setClasses(classesRes.data || [])
       setGenerations(gensRes.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
-      console.log('Fetch complete, setting loading to false')
       setLoading(false)
     }
   }
@@ -191,11 +180,8 @@ export default function ClassesPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
+      <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin text-[#00adef]" />
-        <p className="text-sm text-gray-500">
-          Supabase: {process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Připojeno' : 'NEPŘIPOJENO - chybí env proměnné'}
-        </p>
       </div>
     )
   }
