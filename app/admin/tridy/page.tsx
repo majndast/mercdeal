@@ -191,8 +191,11 @@ export default function ClassesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-[#00adef]" />
+        <p className="text-sm text-gray-500">
+          Supabase: {process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Připojeno' : 'NEPŘIPOJENO - chybí env proměnné'}
+        </p>
       </div>
     )
   }
