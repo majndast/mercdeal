@@ -42,15 +42,18 @@ export default function ClassesPage() {
   const supabase = createClient()
 
   useEffect(() => {
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'NOT SET')
     fetchData()
   }, [])
 
   const fetchData = async () => {
+    console.log('Fetching classes and generations...')
     try {
-      const [classesRes, gensRes] = await Promise.all([
-        supabase.from('mercedes_classes').select('*').order('sort_order'),
-        supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
-      ])
+      const classesRes = await supabase.from('mercedes_classes').select('*').order('sort_order')
+      console.log('Classes response:', classesRes)
+
+      const gensRes = await supabase.from('mercedes_generations').select('*').order('year_from', { ascending: false })
+      console.log('Generations response:', gensRes)
 
       if (classesRes.error) {
         console.error('Error fetching classes:', classesRes.error)
@@ -64,6 +67,7 @@ export default function ClassesPage() {
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
+      console.log('Fetch complete, setting loading to false')
       setLoading(false)
     }
   }
